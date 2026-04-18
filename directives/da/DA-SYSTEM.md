@@ -71,6 +71,7 @@ Project Design/                        ← root page (created once by first /da 
 | Property       | Type                                      |
 |----------------|-------------------------------------------|
 | Title          | title                                     |
+| ID             | rich_text (e.g. DISC-001)                 |
 | Status         | select: Open / Concluded / Abandoned      |
 | Date Opened    | date                                      |
 | Date Concluded | date                                      |
@@ -91,6 +92,7 @@ Project Design/                        ← root page (created once by first /da 
 | Property    | Type                                                        |
 |-------------|-------------------------------------------------------------|
 | Title       | title                                                       |
+| ID          | rich_text (e.g. PT-001, Q-001, TODO-001, RISK-001)          |
 | Type        | select: TODO / RISK / POINT / QUESTION                      |
 | Status      | select: Open / Done / Mitigated / Answered / Active         |
 | Priority    | select: High / Medium / Low                                 |
@@ -282,14 +284,14 @@ Raw local copies of concluded discussions are written to:
 
 ## ID Scheme
 
-| Record type | Format      | Example   | Counter in per-project config |
-|-------------|-------------|-----------|-------------------------------|
-| Discussion  | `DISC-[NNN]`| DISC-003  | `discussion_counter`          |
-| Decision    | `DA-[NNN]`  | DA-007    | `decision_counter`            |
-| TODO        | `TODO-[NNN]`| TODO-004  | `todo_counter`                |
-| Risk        | `RISK-[NNN]`| RISK-002  | `risk_counter`                |
-| Point       | `PT-[NNN]`  | PT-001    | `point_counter`               |
-| Question    | `Q-[NNN]`   | Q-001     | `question_counter`            |
+| Record type | Format       | Example   | Counter in per-project config |
+|-------------|--------------|-----------|-------------------------------|
+| Discussion  | `DISC-[NNN]` | DISC-003  | `discussion_counter`          |
+| Decision    | `DEC-[NNN]`  | DEC-007   | `decision_counter`            |
+| TODO        | `TODO-[NNN]` | TODO-004  | `todo_counter`                |
+| Risk        | `RISK-[NNN]` | RISK-002  | `risk_counter`                |
+| Point       | `PNT-[NNN]`  | PNT-001   | `point_counter`               |
+| Question    | `QST-[NNN]`  | QST-001   | `question_counter`            |
 
 NNN is zero-padded to 3 digits. Counters increment at record creation and are never reused.
 
