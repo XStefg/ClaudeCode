@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The Design Assistant is a structured system for tracking design discussions, decisions, action items (TODOs and risks), and project context across projects. All records are stored as rich pages in Notion; local copies are written only at discussion conclusion.
+The Design Assistant is a structured system for tracking design discussions, decisions, action items (TODOs and risks), system inventory (parts, components, software), and project context across projects. All records are stored as rich pages in Notion; local copies are written only at discussion conclusion.
 
 ---
 
@@ -10,7 +10,7 @@ The Design Assistant is a structured system for tracking design discussions, dec
 
 ### Project
 
-A named entry in the global Projects database in Notion. Each project has its own Discussions, Decisions, and Action Items databases nested inside its Notion page. One project is "active" at a time, tracked in session context only — never persisted to disk.
+A named entry in the global Projects database in Notion. Each project has its own Discussions, Decisions, Action Items, and System Items databases nested inside its Notion page. One project is "active" at a time, tracked in session context only — never persisted to disk.
 
 ### Discussion
 
@@ -24,9 +24,13 @@ A design decision linked to the discussion that produced it. Each decision has a
 
 Either a TODO or a RISK. Both live in the project's Action Items database and are linked to the discussion that created them. TODOs and RISKs use separate templates.
 
+### System Item
+
+A Part, Component, or Software module. All three live in the project's System Items database and are linked to the discussion that identified them. Parts, Components, and Software use separate templates.
+
 ### Template
 
-Seven global template pages live under the root `Templates/` page in Notion. They define the section structure (headings + placeholder content) for each record type. Templates are fetched live before every record creation — changes made in Notion are picked up automatically.
+Ten global template pages live under the root `Templates/` page in Notion. They define the section structure (headings + placeholder content) for each record type. Templates are fetched live before every record creation — changes made in Notion are picked up automatically.
 
 #### Section markers
 
@@ -46,11 +50,15 @@ Project Design/                        ← root page (created once by first /da 
     Risk Template
     Point Template
     Question Template
+    Part Template                      🔩
+    Component Template                 🧩
+    Software Template                  💾
   Projects                             ← database (created once)
     [Robot Arm]/                       ← project entry
       Discussions                      ← database
       Decisions                        ← database
       Action Items                     ← database
+      System Items                     ← database
     [Desk Lamp]/
       ...
 ```
@@ -103,6 +111,22 @@ Status semantics by type: TODO → Open/Done · RISK → Open/Mitigated · POINT
 
 The **References** relation is populated by `/da ref`.
 
+**System Items**
+
+| Property   | Type                                          |
+|------------|-----------------------------------------------|
+| Title      | title                                         |
+| ID         | rich_text (e.g. PART-001, COMP-001, SFW-001)  |
+| Type       | select: PART / COMPONENT / SOFTWARE           |
+| Status     | select: Candidate / Selected / Rejected       |
+| Category   | select (user-defined)                         |
+| Discussion | relation → Discussions                        |
+| References | relation → Discussions (multi)                |
+
+Status semantics by type: PART / COMPONENT / SOFTWARE → Candidate/Selected/Rejected
+
+The **References** relation is populated by `/da ref`.
+
 ---
 
 ## Default Template Content
@@ -146,6 +170,15 @@ These are the default section structures written to each template page during `/
 
 ## Risks
 [later: accumulated via /da risk]
+
+## Parts
+[later: accumulated via /da part]
+
+## Components
+[later: accumulated via /da component]
+
+## Software
+[later: accumulated via /da software]
 
 ## Conclusion
 [later: filled in at /da conclude]
@@ -229,6 +262,60 @@ These are the default section structures written to each template page during `/
 [later: resolved in a future discussion via /da ref]
 ```
 
+### Part Template 🔩
+```
+## Raised in
+[later: linked at creation]
+
+## Description
+[What this part is]
+
+## Manufacturer
+[Manufacturer name]
+
+## Part Number
+[Part number or model]
+
+## Datasheet
+[Link or reference to datasheet]
+
+## Notes
+[Anything else relevant]
+```
+
+### Component Template 🧩
+```
+## Raised in
+[later: linked at creation]
+
+## Description
+[What this component is and what it does]
+
+## Interface
+[How this component connects to the rest of the system]
+
+## Notes
+[Anything else relevant]
+```
+
+### Software Template 💾
+```
+## Raised in
+[later: linked at creation]
+
+## Description
+[What this software does]
+
+## Language
+[Programming language or framework]
+
+## Repository
+[URL or reference to source code]
+
+## Notes
+[Anything else relevant]
+```
+
 ---
 
 ## Local State
@@ -262,12 +349,16 @@ Created by `/da init` for each project.
   "notion_discussions_db_id": "xxx",
   "notion_decisions_db_id": "xxx",
   "notion_action_items_db_id": "xxx",
+  "notion_system_items_db_id": "xxx",
   "discussion_counter": 5,
   "decision_counter": 8,
   "todo_counter": 4,
   "risk_counter": 2,
   "point_counter": 3,
-  "question_counter": 1
+  "question_counter": 1,
+  "part_counter": 0,
+  "component_counter": 0,
+  "software_counter": 0
 }
 ```
 
@@ -292,6 +383,9 @@ Raw local copies of concluded discussions are written to:
 | Risk        | `RISK-[NNN]` | RISK-002  | `risk_counter`                |
 | Point       | `PNT-[NNN]`  | PNT-001   | `point_counter`               |
 | Question    | `QST-[NNN]`  | QST-001   | `question_counter`            |
+| Part        | `PART-[NNN]` | PART-001  | `part_counter`                |
+| Component   | `COMP-[NNN]` | COMP-001  | `component_counter`           |
+| Software    | `SFW-[NNN]`  | SFW-001   | `software_counter`            |
 
 NNN is zero-padded to 3 digits. Counters increment at record creation and are never reused.
 
@@ -314,11 +408,14 @@ The local file at `[project-path]/.da/discussions/DISC-[NNN]-[slug].md` is a **c
 
 | Command | Appended entry |
 |---------|----------------|
-| `/da point` | `**[date]** PT-NNN — [title]` |
-| `/da question` | `**[date]** Q-NNN — [title]` |
-| `/da decision` | `**[date]** DA-NNN — [title]` |
+| `/da point` | `**[date]** PNT-NNN — [title]` |
+| `/da question` | `**[date]** QST-NNN — [title]` |
+| `/da decision` | `**[date]** DEC-NNN — [title]` |
 | `/da todo` | `**[date]** TODO-NNN — [title]` |
 | `/da risk` | `**[date]** RISK-NNN — [title]` |
+| `/da part` | `**[date]** PART-NNN — [title]` |
+| `/da component` | `**[date]** COMP-NNN — [title]` |
+| `/da software` | `**[date]** SFW-NNN — [title]` |
 
 For `/da new about [ID]`, the first entry is: `**[date]** Opened about [ID] — [record title]`
 
@@ -343,6 +440,6 @@ Header line updated: `**Status:** Abandoned`
 2. Records are immutable once created — decisions can be superseded via status update, but never deleted.
 3. IDs are assigned at record creation time and stored in the Notion page properties.
 4. Always fetch the live template from Notion before creating any record.
-5. Config files must be written back to disk immediately after any state change (counter increment, `last_project` update). This includes `point_counter` and `question_counter`. Neither `active_project` nor `current_discussion` is ever stored on disk — both live in session context only.
+5. Config files must be written back to disk immediately after any state change (counter increment, `last_project` update). This includes `point_counter`, `question_counter`, `part_counter`, `component_counter`, and `software_counter`. Neither `active_project` nor `current_discussion` is ever stored on disk — both live in session context only.
 5a. The local transcript file must be created when a discussion opens and appended to after every action command — it is the chronological session record, not a Notion mirror.
 6. The `References` relation is updated in Notion when `/da ref` is called — it is not inferred.

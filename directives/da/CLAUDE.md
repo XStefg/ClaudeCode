@@ -28,7 +28,7 @@ When writing Notion page content, always use Notion-flavored Markdown. **Do NOT 
 
 ### Template fetch rule
 
-Before creating any record (discussion, decision, TODO, risk, point, question, or new project page):
+Before creating any record (discussion, decision, TODO, risk, point, question, part, component, software, or new project page):
 1. Fetch the relevant template page from the global Templates page (ID in global config: `notion_templates_page_id`).
 2. Parse its sections, **preserving the exact block type of each section as it appears in the fetched Notion page** — a `<callout>` block must remain a `<callout>`, a heading must remain a heading, etc. Never convert one block type to another (e.g. do not convert a callout to a blockquote `>`).
 3. For each section whose placeholder is not yet filled in:
@@ -42,7 +42,7 @@ This fetch-and-prompt behavior applies identically to all record types.
 
 ### Auto-title generation
 
-Commands that accept a title/text parameter (`/da new`, `/da point`, `/da question`, `/da decision`, `/da todo`, `/da risk`) may be invoked without one.
+Commands that accept a title/text parameter (`/da new`, `/da point`, `/da question`, `/da decision`, `/da todo`, `/da risk`, `/da part`, `/da component`, `/da software`) may be invoked without one.
 
 - **If the parameter is provided**: use it as-is. No change.
 - **If the parameter is omitted**: proceed normally — fetch the template and prompt for sections. After the first non-`[later:]` section is filled in, synthesize a concise title (~6–8 words) from that content and use it without asking for confirmation. Report the generated title when confirming the created record.
@@ -52,13 +52,13 @@ Commands that accept a title/text parameter (`/da new`, `/da point`, `/da questi
 
 ### Counter management
 
-Counters (`discussion_counter`, `decision_counter`, `todo_counter`, `risk_counter`) live in the per-project `.da/config.json`. Increment the relevant counter **immediately after** successfully creating the Notion record, then write the updated config back to disk. IDs are assigned at record-creation time.
+Counters (`discussion_counter`, `decision_counter`, `todo_counter`, `risk_counter`, `point_counter`, `question_counter`, `part_counter`, `component_counter`, `software_counter`) live in the per-project `.da/config.json`. Increment the relevant counter **immediately after** successfully creating the Notion record, then write the updated config back to disk. IDs are assigned at record-creation time.
 
 ### `/da init` — first-run detection
 
 If `~/dev/.da/config.json` does not exist:
 - This is a first-run bootstrap. Ask the user for a **Notion parent page ID**.
-- Create the full global Notion structure (root page, Templates page + 5 template pages, Projects database).
+- Create the full global Notion structure (root page, Templates page + 10 template pages, Projects database).
 - Write `~/dev/.da/config.json` with the resulting IDs.
 - Then proceed to create the first project entry as described in the command spec.
 
