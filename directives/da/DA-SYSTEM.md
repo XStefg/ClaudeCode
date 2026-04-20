@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The Design Assistant is a structured system for tracking design discussions, decisions, action items (TODOs and risks), system inventory (parts, components, software), and project context across projects. All records are stored as rich pages in Notion; local copies are written only at discussion conclusion.
+The Design Assistant is a structured system for tracking design discussions, decisions, action items (TODOs and risks), system inventory (parts, components, software), and project context across projects. All records are stored as rich pages in Notion; a local transcript file is created when a discussion opens and updated throughout its lifetime.
 
 ---
 
@@ -18,11 +18,11 @@ A focused design conversation on a single topic. A discussion is open until it i
 
 ### Decision
 
-A design decision linked to the discussion that produced it. Each decision has a globally unique `DA-NNN` ID (per project). Decisions are stored as rich Notion pages with structured sections (Summary, Context, Rationale, Consequences).
+A design decision linked to the discussion that produced it. Each decision has a globally unique `DEC-NNN` ID (per project). Decisions are stored as rich Notion pages with a Details callout section.
 
 ### Action Item
 
-Either a TODO or a RISK. Both live in the project's Action Items database and are linked to the discussion that created them. TODOs and RISKs use separate templates.
+A TODO, RISK, POINT, or QUESTION. All four live in the project's Action Items database and are linked to the discussion that created them. Each type uses a separate template.
 
 ### System Item
 
@@ -30,11 +30,11 @@ A Part, Component, or Software module. All three live in the project's System It
 
 ### Template
 
-Ten global template pages live under the root `Templates/` page in Notion. They define the section structure (headings + placeholder content) for each record type. Templates are fetched live before every record creation — changes made in Notion are picked up automatically.
+Ten global template pages live under the root `Templates/` page in Notion. They define the section structure (callout blocks + placeholder content) for each record type. Templates are fetched live before every record creation — changes made in Notion are picked up automatically.
 
 #### Section markers
 
-- `[later: hint]` — skip this section during record creation. The heading is created with no body content; the hint is for documentation only. Use this for sections filled by a specific command or lifecycle event, or populated programmatically (e.g. back-references filled at record creation time).
+- `[later: hint]` — skip this section during record creation. The block is created with no body content; the hint is for documentation only. Use this for sections filled by a specific command or lifecycle event, or populated programmatically (e.g. back-references filled at record creation time).
 
 ---
 
@@ -90,7 +90,7 @@ Project Design/                        ← root page (created once by first /da 
 |-------------|-------------------------------------------|
 | Title       | title                                     |
 | Status      | select: Active / Superseded               |
-| ID          | rich_text (e.g. DA-001)                   |
+| ID          | rich_text (e.g. DEC-001)                  |
 | Discussion  | relation → Discussions                    |
 | References  | relation → Discussions (multi)            |
 | Date        | date                                      |
@@ -100,7 +100,7 @@ Project Design/                        ← root page (created once by first /da 
 | Property    | Type                                                        |
 |-------------|-------------------------------------------------------------|
 | Title       | title                                                       |
-| ID          | rich_text (e.g. PT-001, Q-001, TODO-001, RISK-001)          |
+| ID          | rich_text (e.g. PNT-001, QST-001, TODO-001, RISK-001)       |
 | Type        | select: TODO / RISK / POINT / QUESTION                      |
 | Status      | select: Open / Done / Mitigated / Answered / Active         |
 | Priority    | select: High / Medium / Low                                 |
@@ -133,187 +133,166 @@ The **References** relation is populated by `/da ref`.
 
 These are the default section structures written to each template page during `/da init`. They may be freely edited in Notion — DA always fetches the current version.
 
+All blocks are **callouts** in Notion-flavored Markdown. Block types must be preserved exactly as fetched — never convert a callout to a heading or blockquote.
+
 ### Project Page Template
 ```
-## Description
-[What this project is about]
-
-## Existing Solutions
-[Known prior art, competing products, or reference implementations]
-
-## External References
-[Links to datasheets, papers, resources, inspiration]
-
-## Avenues to Explore
-[Ideas, approaches, or directions worth investigating]
-
-## Success Criteria
-[How we'll know this project is done / working]
+<callout icon="📝" color="blue_bg">
+  **Description**
+  [What this project is about]
+</callout>
 ```
 
 ### Discussion Template
 ```
-## Summary
-[What this discussion is exploring]
-
-## Key Points
-[later: accumulated via /da point]
-
-## Open Questions
-[later: accumulated via /da question]
-
-## Decisions
-[later: accumulated via /da decision]
-
-## TODOs
-[later: accumulated via /da todo]
-
-## Risks
-[later: accumulated via /da risk]
-
-## Parts
-[later: accumulated via /da part]
-
-## Components
-[later: accumulated via /da component]
-
-## Software
-[later: accumulated via /da software]
-
-## Conclusion
-[later: filled in at /da conclude]
+<callout icon="📝" color="blue_bg">
+  **Summary**
+  [What this discussion is exploring]
+</callout>
+<callout icon="💬" color="purple_bg">
+  **Key Points**
+  [later: accumulated via /da point]
+</callout>
+<callout icon="❓" color="yellow_bg">
+  **Open Questions**
+  [later: accumulated via /da question]
+</callout>
+<callout icon="✅" color="green_bg">
+  **Decisions**
+  [later: accumulated via /da decision]
+</callout>
+<callout icon="📌" color="orange_bg">
+  **TODOs**
+  [later: accumulated via /da todo]
+</callout>
+<callout icon="⚠️" color="red_bg">
+  **Risks**
+  [later: accumulated via /da risk]
+</callout>
+<callout icon="🏁" color="gray_bg">
+  **Conclusion**
+  [later: filled in at /da conclude]
+</callout>
 ```
 
 ### Decision Template
 ```
-## Discussion
-[later: linked at creation]
-
-## Summary
-[One or two sentences stating the decision]
-
-## Context
-[What problem or question prompted this decision]
-
-## Rationale
-[Why this option was chosen over alternatives]
-
-## Consequences
-[What changes as a result; what to watch for]
+<callout icon="🔗" color="gray_bg">
+  **Discussion**
+  [later: linked at creation]
+</callout>
+<callout icon="📝" color="blue_bg">
+  **Details**
+  [One or two sentences stating the decision]
+</callout>
 ```
 
 ### TODO Template
 ```
-## Raised in
-[later: linked at creation]
-
-## Description
-[What needs to be done]
-
-## Acceptance Criteria
-[How to know this TODO is complete]
-
-## Notes
-[Anything else relevant]
+<callout icon="🔗" color="gray_bg">
+  **Raised in**
+  [later: linked at creation]
+</callout>
+<callout icon="📌" color="orange_bg">
+  **Description**
+  [What needs to be done]
+</callout>
 ```
 
 ### Risk Template
 ```
-## Raised in
-[later: linked at creation]
-
-## Description
-[What could go wrong]
-
-## Impact
-[What happens if this risk materializes]
-
-## Likelihood
-[How probable is this]
-
-## Mitigation
-[How to prevent or reduce the risk]
+<callout icon="🔗" color="gray_bg">
+  **Raised in**
+  [later: linked at creation]
+</callout>
+<callout icon="⚠️" color="red_bg">
+  **Description**
+  [What could go wrong]
+</callout>
 ```
 
 ### Point Template
 ```
-## Raised in
-[later: linked at creation]
-
-## Point
-[The observation or insight]
-
-## Context
-[Why this matters / what prompted it]
+<callout icon="🔗" color="gray_bg">
+  **Raised in**
+  [later: linked at creation]
+</callout>
+<callout icon="💬" color="purple_bg">
+  **Description**
+  [The observation or insight]
+</callout>
 ```
 
 ### Question Template
 ```
-## Raised in
-[later: linked at creation]
-
-## Question
-[The specific question to be answered]
-
-## Context
-[Why this question matters / what prompted it]
-
-## Answer
-[later: resolved in a future discussion via /da ref]
+<callout icon="🔗" color="gray_bg">
+  **Raised in**
+  [later: linked at creation]
+</callout>
+<callout icon="❓" color="yellow_bg">
+  **Question**
+  [The specific question to be answered]
+</callout>
+<callout icon="✅" color="green_bg">
+  **Answer**
+  [later: resolved in a future discussion via /da ref]
+</callout>
 ```
 
 ### Part Template 🔩
 ```
-## Raised in
-[later: linked at creation]
-
-## Description
-[What this part is]
-
-## Manufacturer
-[Manufacturer name]
-
-## Part Number
-[Part number or model]
-
-## Datasheet
-[Link or reference to datasheet]
-
-## Notes
-[Anything else relevant]
+<callout icon="🔗" color="gray_bg">
+  **Raised in**
+  [later: linked at creation]
+</callout>
+<callout icon="🔩" color="blue_bg">
+  **Description**
+  [What this part is]
+</callout>
+<callout icon="#️⃣" color="gray_bg">
+  **Part Number**
+  [Part number or model]
+</callout>
+<callout icon="📄" color="gray_bg">
+  Where to buy
+  [Link or reference to online seller]
+</callout>
+<callout icon="📝" color="gray_bg">
+  **Notes**
+  [Anything else relevant]
+</callout>
 ```
 
 ### Component Template 🧩
 ```
-## Raised in
-[later: linked at creation]
-
-## Description
-[What this component is and what it does]
-
-## Interface
-[How this component connects to the rest of the system]
-
-## Notes
-[Anything else relevant]
+<callout icon="🔗" color="gray_bg">
+  **Raised in**
+  [later: linked at creation]
+</callout>
+<callout icon="🧩" color="pink_bg">
+  **Description**
+  [What this component is and what it does]
+</callout>
+<callout icon="📝" color="gray_bg">
+  **Notes**
+  [Anything else relevant]
+</callout>
 ```
 
 ### Software Template 💾
 ```
-## Raised in
-[later: linked at creation]
-
-## Description
-[What this software does]
-
-## Language
-[Programming language or framework]
-
-## Repository
-[URL or reference to source code]
-
-## Notes
-[Anything else relevant]
+<callout icon="🔗" color="gray_bg">
+  **Raised in**
+  [later: linked at creation]
+</callout>
+<callout icon="💾" color="brown_bg">
+  **Description**
+  [What this software does]
+</callout>
+<callout icon="📝" color="gray_bg">
+  **Notes**
+  [Anything else relevant]
+</callout>
 ```
 
 ---

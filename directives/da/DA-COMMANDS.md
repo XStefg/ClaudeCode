@@ -126,7 +126,7 @@ Open a new discussion anchored to an existing record.
    This section is not part of the standard Discussion Template — injected only for `about` discussions.
 9. Link the record:
    - Add the new discussion to the record's **References** relation in Notion.
-   - Append a linked bullet to the appropriate section of the discussion page based on record type (RISK → Risks, QST-NNN → Open Questions, TODO → TODOs, PNT-NNN → Key Points, DEC-NNN → Decisions, PART-NNN → Parts, COMP-NNN → Components, SFW-NNN → Software).
+   - Append a linked bullet to the appropriate section of the discussion page based on record type (RISK → Risks, QST-NNN → Open Questions, TODO → TODOs, PNT-NNN → Key Points, DEC-NNN → Decisions). For PART-NNN, COMP-NNN, and SFW-NNN, skip this step — the discussion template has no sections for system items.
 10. Increment `discussion_counter`. Assign ID `DISC-[NNN]`. Write updated per-project config.
 11. Hold `current_discussion` in session context: `{ notion_page_id, title, opened, disc_number }`.
 12. Create the local transcript file:
@@ -264,16 +264,15 @@ Create a Part system item linked to the current discussion.
 
 1. Require an open discussion (error if none).
 2. Fetch the global Part Template from Notion.
-3. Prompt for each non-`[later:]` section (Description, Manufacturer, Part Number, Datasheet, Notes).
+3. Prompt for each non-`[later:]` section (Description, Part Number, Where to buy, Notes).
 4. Increment `part_counter`. Assign ID `PART-[NNN]`.
 5. Create the Notion page in the System Items database with:
    - Type = PART, Status = Candidate, ID = PART-[NNN]
    - Discussion relation = current discussion page
    - Fill the `Raised in` section with a Notion page mention/link to the current discussion.
-6. Append a linked bullet to the `Parts` section of the current discussion page: `- PART-NNN — [title]`.
-7. Append to the local transcript: `**[date]** PART-NNN — [title]`
-8. Write updated per-project config.
-9. Confirm: display PART-NNN and Notion page link.
+6. Append to the local transcript: `**[date]** PART-NNN — [title]`
+7. Write updated per-project config.
+8. Confirm: display PART-NNN and Notion page link.
 
 ---
 
@@ -283,16 +282,15 @@ Create a Component system item linked to the current discussion.
 
 1. Require an open discussion (error if none).
 2. Fetch the global Component Template from Notion.
-3. Prompt for each non-`[later:]` section (Description, Interface, Notes).
+3. Prompt for each non-`[later:]` section (Description, Notes).
 4. Increment `component_counter`. Assign ID `COMP-[NNN]`.
 5. Create the Notion page in the System Items database with:
    - Type = COMPONENT, Status = Candidate, ID = COMP-[NNN]
    - Discussion relation = current discussion page
    - Fill the `Raised in` section with a Notion page mention/link to the current discussion.
-6. Append a linked bullet to the `Components` section of the current discussion page: `- COMP-NNN — [title]`.
-7. Append to the local transcript: `**[date]** COMP-NNN — [title]`
-8. Write updated per-project config.
-9. Confirm: display COMP-NNN and Notion page link.
+6. Append to the local transcript: `**[date]** COMP-NNN — [title]`
+7. Write updated per-project config.
+8. Confirm: display COMP-NNN and Notion page link.
 
 ---
 
@@ -302,16 +300,15 @@ Create a Software system item linked to the current discussion.
 
 1. Require an open discussion (error if none).
 2. Fetch the global Software Template from Notion.
-3. Prompt for each non-`[later:]` section (Description, Language, Repository, Notes).
+3. Prompt for each non-`[later:]` section (Description, Notes).
 4. Increment `software_counter`. Assign ID `SFW-[NNN]`.
 5. Create the Notion page in the System Items database with:
    - Type = SOFTWARE, Status = Candidate, ID = SFW-[NNN]
    - Discussion relation = current discussion page
    - Fill the `Raised in` section with a Notion page mention/link to the current discussion.
-6. Append a linked bullet to the `Software` section of the current discussion page: `- SFW-NNN — [title]`.
-7. Append to the local transcript: `**[date]** SFW-NNN — [title]`
-8. Write updated per-project config.
-9. Confirm: display SFW-NNN and Notion page link.
+6. Append to the local transcript: `**[date]** SFW-NNN — [title]`
+7. Write updated per-project config.
+8. Confirm: display SFW-NNN and Notion page link.
 
 ---
 
@@ -335,7 +332,7 @@ Finalize the current discussion.
 
 1. Require an open discussion.
 2. Fetch the current discussion page from Notion.
-3. Check the Conclusion section — if empty, prompt the user to fill it in (or skip).
+3. Check the Conclusion section — if empty, synthesize a conclusion from the discussion content (summary, key points, decisions, TODOs, risks, open questions). Present it to the user and ask: "Does this conclusion work, or would you like to edit it?" Wait for confirmation or a revised version before proceeding. If the user provides a replacement, use it as-is. The user may also skip (leave blank).
 4. Update the Notion page: Status=Concluded, Date Concluded=today.
 5. Append to the local transcript and update the header:
    ```

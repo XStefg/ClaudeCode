@@ -32,7 +32,7 @@ Before creating any record (discussion, decision, TODO, risk, point, question, p
 1. Fetch the relevant template page from the global Templates page (ID in global config: `notion_templates_page_id`).
 2. Parse its sections, **preserving the exact block type of each section as it appears in the fetched Notion page** — a `<callout>` block must remain a `<callout>`, a heading must remain a heading, etc. Never convert one block type to another (e.g. do not convert a callout to a blockquote `>`).
 3. For each section whose placeholder is not yet filled in:
-   - If the placeholder starts with `[later:` (case-insensitive), skip it — create the heading/block with no body content, without prompting.
+   - If the placeholder starts with `[later:` (case-insensitive), skip it — create the block with no body content, without prompting.
    - Otherwise, prompt the user for the value — one section at a time.
 4. The user may skip any non-`[later:]` section — create the page with the block present but no body content for that section.
 5. Copy the template page's icon (and cover, if present) to the new page — these are part of the page header and must be preserved.
